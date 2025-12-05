@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Winton Overwat is my Hero</title>
+  <style>
+		header { 
+			font-size: 40px;
+			background-color: #73878c;
+			padding-left: 20px;
+			box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+		}
+		
+		.toprow {
+			justify-content: space-between;
+			display: flex;
+			align-items: center;
+			color: white;
+		}
+		
+		.Navigation {
+			display: flex;
+			align-items: flex-start;
+			font-size: 20px;
+			margin-left: 20px;
+			padding-bottom: 20px;
+		}
+		.Navigation a {
+			color:white;
+			border-style: solid;
+			padding: 5px;
+			text-decoration: none;
+			background-color: #7b8184
+		}
+		body {
+			margin:0;
+			font-family: "Segoe UI", Roboto, Arial, sans-serif;
+		}
+		.paragraph {
+			justify-content: space-between;
+			display: flex;
+			align-items: center;
+			padding-left: 20px; 
+			font-size: 30px;
+			width: 70%;
+			background-color: gray;
+			border-radius: 8px;
+			color: white;
+			margin-left: 15%;
+			margin-top: 20px;
+			margin-bottom: 20px;
+			padding: 20px;
+		}
+		#choices {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+		#choices button {
+			color: white;
+			background-color: #73878c;
+			border-radius: 8px;
+			padding-left: 15px;
+			padding-right: 15px;
+			font-size: 35px;
+		}
+		main h1 {
+			margin-left: 10px;
+			text-decoration: underline;
+		}		
+		footer {
+			background-color: #73878c;
+			font-size: 20px;
+			justify-content: space-between;
+			display: flex;
+			padding: 20px;
+			gap: 10px;
+			color: white;
+		}
+		
+	</style>
+ </head>
+<body>
+	<header>
+			<div class="toprow">
+				<h1>Winton HQ - Quiz</h1>	
+				<img src="Img/WintonLogo.png" height="250" width="250" alt="Winton">
+			</div>
+			<nav class="Navigation">
+				<a href="index.html">Welcome </a> &nbsp;
+				<a href="Final_About.html">Who is the Winton </a> &nbsp;
+				<a href="Final_Activities.html">What does Winton like to do </a> &nbsp;
+				<a href="Final_Contact.html">Winton Weekly </a> &nbsp;
+				<a href="Final_Art.html">Quiz </a>
+			</nav>
+		 
+	</header>
+	
+	<main>
+		<div class="paragraph">
+			<section id="comp1">
+				<h2>Winton Fan Quiz</h2>
+				<p id="QuizTimer">Time: 0s</p>
+				<div id="comp1Root"></div>
+				<div id="live" role="status" aria-live="polite"></div>
+			</section>
+		</div>
+		<script>
+			const say = (msg) => { $qs('#live').textContent = msg; };
+			function $qs(selector, root = document) {
+				return root.querySelector(selector);
+			}
+		
+		
+			const QUIZ = [
+			  { q: "Winton is ____ years old?", choices: ["31","70","1000"], answer: 0, answered: false },
+			  { q: "Wintons favorite food is ____?", choices: ["Peanut Butter","Banana","Jelly"], answer: 0, answered: false },
+			  { q: "Where does Winton Live?", choices: ["Havana","Rialto","Gibraltar","Kings Row"], answer: 2, answered: false},
+			  { q: 'What is the name of Wintons AI assistant?', choices: ['Ana', 'Cassidy', 'Gibby','Athena'], answer: 3, answered: false}
+			];		
+		
+			let QuizTimer = 0;
+			let QuizInterval = null;
+			const msgEl = document.getElementById('QuizAnswers');
+			function renderQuiz(rootId, items = QUIZ) {
+			  const root = document.getElementById(rootId);
+			  let i = 0, score = 0;
+
+			  root.innerHTML = `
+				<p id="q"></p>
+				<div id="choices" class="row"></div>
+				<div class="row">
+					<button id="prev">Prev</button>
+					<button id="next">Next</button>
+					<button id="finish">Finish</button>
+				</div>
+				`;
+
+			  const qEl = $qs('#q', root);
+			  const cEl = $qs('#choices', root);
+			  const scoreEl = $qs('#score', root);
+
+			  function paint() {
+				const item = items[i];
+				qEl.textContent = (i+1)+". "+item.q;
+				cEl.innerHTML = "";
+				item.choices.forEach((text, idx) => {
+				  const btn = document.createElement('button');
+				  btn.textContent = text;
+				  btn.addEventListener('click', () => {
+						if (idx === item.answer) {
+							if (!item.answered) {
+								score++; item.answered = true; 
+								say("correct");
+								msgEl.textContent = "Correct!";
+							} else {
+								say("already answered"); 
+								msgEl.textContent = "Already Answered";
+							} 
+							} else {
+								say("incorrect"); 
+								msgEl.textContent = "Incorrect"; }
+					scoreEl.textContent = "Score: " + score;
+				  });
+				  cEl.appendChild(btn);
+				});
+			  }
+				const QuizTimerEl = document.getElementById('QuizTimer');
+				QuizInterval = setInterval(() => { QuizTimer++; QuizTimerEl.textContent = "Time: " + QuizTimer + "s";}, 1000);
+				$qs('#prev', root).addEventListener('click', () => { i = Math.max(0, i-1); paint(); });
+				$qs('#next', root).addEventListener('click', () => { i = Math.min(items.length-1, i+1); paint(); });
+				$qs('#finish', root).addEventListener('click', () => { clearInterval(QuizInterval); say("Finished! Score: "+score+"/"+items.length); msgEl.textContent = "Finished! Score: "+score+"/"+items.length + " - " + QuizTimer + "s" });
+
+			  paint();
+			}
+
+			// ---------- Component 2: Gallery (Track B) ----------
+			function renderGallery(rootId, items = GALLERY, intervalMs = 2500) {
+				const root = document.getElementById(rootId);
+				let i = 0, timer = null;
+				GalleryPlayingEl.textContent = "Auto-play off"
+			  root.innerHTML = `
+				<figure>
+				  <img id="gImg" src="" alt="" style="max-width:100%; border-radius:10px;" />
+				  <figcaption id="cap"></figcaption>
+				</figure>
+				<div class="row">
+				  <button id="prev">Prev</button>
+				  <button id="play">Play</button>
+				  <button id="pause">Pause</button>
+				  <button id="next">Next</button>
+				</div>`;
+
+			  const img = $qs('#gImg', root), cap = $qs('#cap', root);
+			  function paint(){ const it = items[i]; img.src = it.src; img.alt = it.alt; cap.textContent = it.caption + ` (${i+1}/${items.length})`; }
+			  function next(){ i = (i+1) % items.length; paint(); }
+			  function prev(){ i = (i-1+items.length) % items.length; paint(); }
+
+			  $qs('#next', root).addEventListener('click', next);
+			  $qs('#prev', root).addEventListener('click', prev);
+			  $qs('#play', root).addEventListener('click', () => { if(!timer){ timer = setInterval(next, intervalMs); say("Auto-play on"); GalleryPlayingEl.textContent = "Auto-play on"; }});
+			  $qs('#pause', root).addEventListener('click', () => { clearInterval(timer); timer = null; say("Auto-play off"); GalleryPlayingEl.textContent = "Auto-play off"; });
+
+			  root.addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') next(); if (e.key === 'ArrowLeft') prev(); });
+			  root.tabIndex = 0;
+
+			  paint();
+			}	
+			renderQuiz('comp1Root', QUIZ);
+		</script>
+	
+	</main>
+	
+	<footer>
+		<div>
+			<h4>Contact Info:</h4>
+			<ul>
+				<li>Phone Number: 555-0199</li>
+				<li>Email: wintonrocks2016@gmail.com</li>
+				<li>Fax:(713) 555-3901 </li>
+			</ul>
+		</div>
+		<div>
+			<h4>Winton Info:</h4>
+			<ul>
+				<li> <a href="https://youtu.be/_uRDYiDR35I?si=R5fvNzwtTP1m5lFs">Guide to Winton</a> </li>
+				<li> <a href="https://overwatch.fandom.com/wiki/Winston/Stadium">The power of Winton</a> </li>
+			</ul>
+		</div>
+		<div>
+			<h4>Winton Social Media:</h4>
+			<ul>
+				<li>Donation Link (COMING SOON!)</li>
+				<li> <a href="https://overwatch.fandom.com/wiki/Winston#Horizon_Lunar_Colony"> Wintons Blog </a> </li>
+				<li> <a href="https://overwatch.fandom.com/wiki/Winston/Cosmetics"> Wintons Fasion Trend </a> </li>
+			</ul>
+		</div>
+	</footer>
+
+</body>
+</html>
+  
